@@ -1,0 +1,13 @@
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+.terraform.lock.*
+.terraform.lock.hcl
+
+# my gitignore* files
+gitignore*
+
+cloudinits/*/cloudinit.userdata.yaml
