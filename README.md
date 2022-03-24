@@ -26,9 +26,35 @@ cd IstioDemo
 Inside the VM
 
 ```
-# Create kubernetes cluster with kind (over docker)
+# Create kubernetes cluster with kind (over docker) and metallb
 kind create cluster
 kubectl get pod -A
+
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/namespace.yaml
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/metallb.yaml
+LB_NET_PREFIX=$(docker network inspect -f '{{range .IPAM.Config }}{{ .Gateway }}{{end}}' kind | cut -d '.' -f1,2)
+LB_NET_IP_FIRST=${LB_NET_PREFIX}.255.200
+LB_NET_IP_LAST=${LB_NET_PREFIX}.255.250
+kubectl apply -f - <<EOT
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: metallb-system
+  name: config
+data:
+  config: |
+    address-pools:
+    - name: default
+      protocol: layer2
+      addresses:
+      - ${LB_NET_IP_FIRST}-${LB_NET_IP_LAST}
+EOT
+## Test loadbalancer can now be created using an internal-ip from docker-network "kind"
+# kubectl apply -f https://kind.sigs.k8s.io/examples/loadbalancer/usage.yaml
+# LB_IP=$(kubectl get svc/foo-service -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
+# curl $LB_IP:5678 
+
+
 
 ```
 
@@ -47,7 +73,8 @@ kubectl get namespaces --label-columns=istio-injection
 # Install addons: kiali, prometheus, etc
 kubectl apply -f samples/addons
 kubectl rollout status deployment/kiali -n istio-system
-
+ISTIOINGRESSGW_LB_IP=$(kubectl -n istio-system get svc/istio-ingressgateway -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
+echo "$ISTIOINGRESSGW_LB_IP istioigw" | sudo tee -a /etc/hosts
 ```
 
 ## Install an app prepared for istio
@@ -71,20 +98,18 @@ kubectl get service,gateway,virtualservice
 # via istio-ingressgateway > Gateway > VirtualService > Service > Deployment > Pod
 #
 #
-# NOTE: We use the IngressGW_NodePort_ip/port to connect to the istio-ingressgateway instead of the normal external-loadbalancer, because this kind setup is simpler (no external-load-balancer). 
-# However, if you want an external-lb (as metallb) refer to https://istio.io/latest/docs/setup/platform-setup/kind/#installation-steps
-#
-export IngressGW_NodePort_Ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' kind-control-plane)
-export IngressGW_NodePort_Port=$(kubectl -n istio-system get service/istio-ingressgateway  -o 'jsonpath={.spec.ports[?(@.name=="http2")].nodePort}')
-curl  http://$IngressGW_NodePort_Ip:$IngressGW_NodePort_Port/productpage | grep -o "<title>.*</title>"
+curl -s http://istioigw/productpage | grep -o "<title>.*</title>"
+
+# Take note of the following ip: <istio-ingressgateway_ExternalIp>
+getent hosts istioigw
 
 # In your laptop ssh-session, add a Local-port-forward-tunnel
-#  - source-port:          <IngressGW_NodePort_Port>
-#  - destination ip:port   <IngressGW_NodePort_Ip>:<IngressGW_NodePort_Port>
+#  - source-port:          20080
+#  - destination ip:port   <istio-ingressgateway_ExternalIp>:80
 #
 # And then in your laptop open chrome tab to the application webpage
 #
-#  http://127.0.0.1:<IngressGW_NodePort_Port>/productpage
+#  http://127.0.0.1:20080/productpage
 #
 # and the web-application should load in chrome
 
