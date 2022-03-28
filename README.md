@@ -209,3 +209,12 @@ Deployment
 - Understand mTLS (intra-mesh, can be mandatory)
 
 
+# Istio Lab Teardown (destroy VM)
+
+In the same github-repo folder where the previous terraform commands were executed before, run:
+
+```
+./terraform_do.sh destroy
+```
+
+This deletes the RG, VM and all other azure-resources created by terraform for this demo
