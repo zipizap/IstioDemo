@@ -203,7 +203,9 @@ Deployment
 ```
 
 - Show Traffic shifting: Weight-based routing
-  - Add DestinationRules to define subsets, and add VirtualService to route traffic based on weights to each subset:
+  - Add DestinationRules to define subsets, and add VirtualService to route traffic based on weights to each subset
+  - Wait 2min to let traffic-average to converge
+  - Kiali: review traffic distribution % on service "review"
 ```
 kubectl apply -f - <<EOT
 apiVersion: networking.istio.io/v1alpha3
@@ -246,8 +248,6 @@ spec:
       weight: 10
 EOT
 ```
-  - Wait 2min to let traffic-average to converge
-  - Kiali: review traffic distribution % on service "review"
 
 
 - Tour Kiali dashboard
