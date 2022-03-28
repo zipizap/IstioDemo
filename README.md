@@ -193,12 +193,61 @@ Gateway: bookinfo-gateway
   - host, port 
 
 VirtualService: 
-  - host, path
+  - host, path [weight/subset]
+
+[DestinationRule: declare subsets]
 
 Service 
 
 Deployment
 ```
+
+- Show Traffic shifting: Weight-based routing
+```
+kubectl apply -f - <<EOT
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: reviews
+spec:
+  host: reviews
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2
+  - name: v3
+    labels:
+      version: v3
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: reviews
+spec:
+  hosts:
+    - reviews
+  http:
+  - route:
+    - destination:
+        host: reviews
+        subset: v1
+      weight: 60
+    - destination:
+        host: reviews
+        subset: v2
+      weight: 30
+    - destination:
+        host: reviews
+        subset: v3
+      weight: 10
+EOT
+```
+  - Wait 2min to let traffic-average to converge
+  - Kiali: review traffic distribution % on service "review"
+
 
 - Tour Kiali dashboard
 
