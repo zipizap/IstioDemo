@@ -203,6 +203,7 @@ Deployment
 ```
 
 - Show Traffic shifting: Weight-based routing
+  - Add DestinationRules to define subsets, and add VirtualService to route traffic based on weights to each subset:
 ```
 kubectl apply -f - <<EOT
 apiVersion: networking.istio.io/v1alpha3
