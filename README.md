@@ -3,7 +3,7 @@ Isto demo in a kind-cluster inside an Azure-VM
 
 # Istio Lab Setup
 
-[![Asciinema - Istio Lab Setup](https://asciinema.org/a/481272.svg)](https://asciinema.org/a/481272)
+[![Asciinema - Istio Lab Setup](https://asciinema.org/a/481272.svg)](https://asciinema.org/a/481272?autoplay=1)
 
 ## Create, configure and login into new azure VM
 ```
