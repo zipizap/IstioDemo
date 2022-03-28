@@ -119,6 +119,12 @@ getent hosts istioigw
 
 # Istio demo
 
+## Generate traffic
+- In VM, leave shell open running:
+```
+while :; do echo -n "$(date)  "; curl -sv http://istioigw/productpage  2>&1 | grep '< HTTP' ; sleep 0.5; done
+```
+
 ## Open Istio dashboards
 
 ### Kiali
@@ -144,15 +150,22 @@ getent hosts istioigw
 ## Understand core resources and concepts
 
 - Understand sidecar auto-injection via namespace label (and exclusion)
+  - New pods get sidecar
+  - Existing pods get sidecar on restart
+
+```
+kubectl get namespaces --label-columns=istio-injection
+kubectl label namespace default  istio-injection=enabled
+```
 
 - Understand Gateway and VirtualService, etc
 
 ```
-# 1 nginx-controller + N Ingress + M Services = 1 Gateway + N VirtualService + M Services: https://rinormaloku.com/istio-practice-routing-virtualservices/
 #
-# Resume gw, virtualservice, destinationRule: https://medium.com/google-cloud/istio-routing-basics-14feab3c040e
+# 1 nginx-controller + N Ingress + M Services = 1 Gateway + N VirtualService + M Services
+# https://rinormaloku.com/istio-practice-routing-virtualservices/
 #
-#   . ingressgateway  -  Gateway - VirtualService - (DestinationRule: subsets) - Services  -  Deployment    -    Pod
+#   . ingressgateway  -  Gateway - VirtualService - (DestinationRule: subsets)     - Services - Deployment  -  Pod
 #     lb: external-ip
 #                        tcp/80
 #                        hosts     hosts
@@ -162,6 +175,9 @@ getent hosts istioigw
 #
 #    *virtualservices* glues *gateway* with *services*
 #    *destinationrule* defines *subsets* (from pod-label version:) which can be used by virtualServices
+#
+# Resume gw, virtualservice, destinationRule: 
+# https://medium.com/google-cloud/istio-routing-basics-14feab3c040e
 ```
 
 
