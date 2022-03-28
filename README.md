@@ -3,6 +3,8 @@ Isto demo in a kind-cluster inside an Azure-VM
 
 # Istio Lab Setup
 
+[![Asciinema - Istio Lab Setup](https://asciinema.org/a/481272.svg)](https://asciinema.org/a/481272)
+
 ## Create, configure and login into new azure VM
 ```
 az login
@@ -26,6 +28,9 @@ cd IstioDemo
 Inside the VM
 
 ```
+# Assure cloud-init finishes executing and installs kind (takes 5min after VM is booted)
+while ! which kind; do echo "waiting cloudinit to finish executing..."; sleep 1; done
+
 # Create kubernetes cluster with kind (over docker) and metallb
 kind create cluster
 kubectl get pod -A
@@ -106,7 +111,7 @@ getent hosts istioigw
 # In your laptop ssh-session, add a Local-port-forward-tunnel
 #  - source-port:          20080
 #  - destination ip:port   <istio-ingressgateway_ExternalIp>:80
-#
+
 # And then in your laptop open chrome tab to the application webpage
 #
 #  http://127.0.0.1:20080/productpage
