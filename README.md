@@ -105,21 +105,19 @@ kubectl get service,gateway,virtualservice
 #
 curl -s http://istioigw/productpage | grep -o "<title>.*</title>"
 
-# Take note of the following ip: <istio-ingressgateway_ExternalIp>
+# Take note of the following ip: <istio-ingressgateway_ExternalIp>, should be 172.18.255.200
 getent hosts istioigw
 
-# In your laptop ssh-session, add a Local-port-forward-tunnel
-#  - source-port:          20080
-#  - destination ip:port   <istio-ingressgateway_ExternalIp>:80
-
-# And then in your laptop open chrome tab to the application webpage
-#
-#  http://127.0.0.1:20080/productpage
-#
-# and the web-application should load in chrome
-
-
 ```
+
+- In your laptop ssh-session, add a Local-port-forward-tunnel towards the <istio-ingressgateway_ExternalIp>:80
+  - source-port:          20080
+  - destination ip:port   172.18.255.200:80
+
+And then in your laptop open chrome tab to the application webpage http://127.0.0.1:20080/productpage
+and the web-application should load in the laptop
+
+
 
 
 # Istio demo
