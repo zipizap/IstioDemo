@@ -97,8 +97,6 @@ kubectl get service,gateway,virtualservice
 
 # Check: from outside the cluster (from VM), we can connect to the app http://...../productpage
 # via istio-ingressgateway > Gateway > VirtualService > Service > Deployment > Pod
-#
-#
 curl -s http://istioigw/productpage | grep -o "<title>.*</title>"
 
 # Take note of the following ip: <istio-ingressgateway_ExternalIp>, should be 172.18.255.200
@@ -106,7 +104,7 @@ getent hosts istioigw
 
 ```
 
-- In your laptop ssh-session, add a Local-port-forward-tunnel towards the <istio-ingressgateway_ExternalIp>:80
+- In your laptop ssh-session, add a Local-port-forward-tunnel towards the <istio-ingressgateway_ExternalIp>:80, should be 172.18.255.200:80 like so
   - source-port:          20080
   - destination ip:port   172.18.255.200:80
 
@@ -185,10 +183,10 @@ kubectl label namespace default  istio-injection=enabled
 ```
 istio-ingressgateway (lb) 
 
-Gateway: bookinfo-gateway 
+Gateway:  bookinfo-gateway 
   - host, port 
 
-VirtualService: 
+VirtualService:  bookinfo
   - host, path [weight/subset]
 
 [DestinationRule: declare subsets]
