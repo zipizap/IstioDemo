@@ -86,7 +86,7 @@ kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml
 # Check app services, and pods with auto-injected sidecar 2/2
 kubectl get services
 timeout 60 watch kubectl get pods
-kubectl describe pod pod-with-sidecar
+#kubectl describe pod pod-with-sidecar
 
 # Check: pod can connect to the app via service productpage:9080
 kubectl exec "$(kubectl get pod -l app=ratings -o jsonpath='{.items[0].metadata.name}')" -c ratings -- curl -sS productpage:9080/productpage | grep -o "<title>.*</title>"
