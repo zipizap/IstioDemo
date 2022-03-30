@@ -162,13 +162,14 @@ kubectl label namespace default  istio-injection=enabled
 # 1 nginx-controller + N Ingress + M Services = 1 Gateway + N VirtualService + M Services
 # https://rinormaloku.com/istio-practice-routing-virtualservices/
 #
-#   . ingressgateway  -  Gateway - VirtualService - (DestinationRule: subsets)     - Services - Deployment  -  Pod
+#   . ingressgateway  -  Gateway - VirtualService - [DestinationRule: subsets]     - Services - Deployment  -  Pod
 #     lb: external-ip
 #                        tcp/80
 #                        hosts     hosts
 #                                  paths
-#                                                    subsets (host:mySvc;version:)                               app: myApp
-#                                                                                                                version: v1/2
+#                                 [weights/subsets]
+#                                                  [subsets (host:mySvc;version:v1]                             app: myApp
+#                                                                                                               [version: v1/2]
 #
 #    *virtualservices* glues *gateway* with *services*
 #    *destinationrule* defines *subsets* (from pod-label version:) which can be used by virtualServices
@@ -187,13 +188,14 @@ Gateway:  bookinfo-gateway
   - host, port 
 
 VirtualService:  bookinfo
-  - host, path [weight/subset]
+  - host, path , [weight/subset]
 
-[DestinationRule: declare subsets]
+[DestinationRule: bookinfo  (declare subsets v1/v2/v3) ]
+  - subsets, host, version
 
-Service 
+Service: productpage, reviews, details, rating  
 
-Deployment
+Deployment: productpage-v1, reviews-v1, reviews-v2, reviews-v3, details-v1, ratings-v1
 ```
 
 - Show Traffic shifting: Weight-based routing
