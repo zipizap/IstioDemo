@@ -54,10 +54,6 @@ data:
       addresses:
       - ${LB_NET_IP_FIRST}-${LB_NET_IP_LAST}
 EOT
-## Test loadbalancer can now be created using an internal-ip from docker-network "kind"
-# kubectl apply -f https://kind.sigs.k8s.io/examples/loadbalancer/usage.yaml
-# LB_IP=$(kubectl get svc/foo-service -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
-# curl $LB_IP:5678 
 
 
 
